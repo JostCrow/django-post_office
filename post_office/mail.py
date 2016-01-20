@@ -80,6 +80,7 @@ def create(sender, recipients=None, cc=None, bcc=None, subject='', message='',
             subject=subject,
             message=message,
             html_message=html_message,
+            template=template,
             scheduled_time=scheduled_time,
             headers=headers, priority=priority, status=status,
             backend_alias=backend
