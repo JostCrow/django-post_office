@@ -78,7 +78,7 @@ class Email(models.Model):
         """
         subject = smart_text(self.subject)
 
-        if self.template is not None:
+        if self.template is not None and not self.html_message:
             _context = Context(self.context)
             subject = Template(self.template.subject).render(_context)
             message = Template(self.template.content).render(_context)
