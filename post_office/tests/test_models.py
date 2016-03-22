@@ -240,6 +240,14 @@ class ModelTest(TestCase):
             'Invalid priority, must be one of: low, medium, high, now'
         )
 
+    def test_send_recipient_display_name(self):
+        """
+        Regression test for:
+        https://github.com/ui/django-post_office/issues/73
+        """
+        email = send(recipients=['Alice Bob <email@example.com>'], sender='from@a.com')
+        self.assertTrue(email.to)
+
     def test_attachment_filename(self):
         attachment = Attachment()
 
@@ -269,3 +277,9 @@ class ModelTest(TestCase):
         template = EmailTemplate.objects.create(name='name')
         id_template = template.translated_templates.create(language='id')
         self.assertEqual(id_template.name, template.name)
+
+    def test_models_repr(self):
+        self.assertEqual(repr(EmailTemplate(name='test', language='en')),
+                         '<EmailTemplate: test en>')
+        self.assertEqual(repr(Email(to='test@example.com')),
+                         "<Email: ['test@example.com']>")

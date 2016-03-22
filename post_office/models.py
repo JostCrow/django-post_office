@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import sys
 from uuid import uuid4
 
 from collections import namedtuple
@@ -9,6 +8,7 @@ from django.conf import settings
 from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.utils.encoding import python_2_unicode_compatible
 from post_office.fields import CommaSeparatedEmailField
 
 try:
@@ -30,6 +30,7 @@ PRIORITY = namedtuple('PRIORITY', 'low medium high now')._make(range(4))
 STATUS = namedtuple('STATUS', 'sent failed queued')._make(range(3))
 
 
+@python_2_unicode_compatible
 class Email(models.Model):
     """
     A model to hold email information.
@@ -45,7 +46,7 @@ class Email(models.Model):
     to = CommaSeparatedEmailField(_("Email To"))
     cc = CommaSeparatedEmailField(_("Cc"))
     bcc = CommaSeparatedEmailField(("Bcc"))
-    subject = models.CharField(_("Subject"), max_length=255, blank=True)
+    subject = models.CharField(_("Subject"), max_length=989, blank=True)
     message = models.TextField(_("Message"), blank=True)
     html_message = models.TextField(_("HTML Message"), blank=True)
     """
@@ -68,7 +69,7 @@ class Email(models.Model):
     class Meta:
         app_label = 'post_office'
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s' % self.to
 
     def email_message(self, connection=None):
@@ -121,10 +122,10 @@ class Email(models.Model):
             status = STATUS.sent
             message = ''
             exception_type = ''
-        except:
+        except Exception as e:
             status = STATUS.failed
-            exception, message, _ = sys.exc_info()
-            exception_type = exception.__name__
+            message = str(e)
+            exception_type = type(e).__name__
 
         if connection and disconnect_after_delivery:
             connection.close()
@@ -149,6 +150,7 @@ class Email(models.Model):
         return super(Email, self).save(*args, **kwargs)
 
 
+@python_2_unicode_compatible
 class Log(models.Model):
     """
     A model to record sending email sending activities.
@@ -165,10 +167,11 @@ class Log(models.Model):
     class Meta:
         app_label = 'post_office'
 
-    def __unicode__(self):
+    def __str__(self):
         return text_type(self.date)
 
 
+@python_2_unicode_compatible
 class EmailTemplate(models.Model):
     """
     Model to hold template information from db
@@ -196,8 +199,8 @@ class EmailTemplate(models.Model):
         verbose_name = _("Email Template")
         verbose_name_plural = _("Email Templates")
 
-    def __unicode__(self):
-        return self.name
+    def __str__(self):
+        return u'%s %s' % (self.name, self.language)
 
     def save(self, *args, **kwargs):
         # If template is a translation, use default template's name
@@ -220,6 +223,7 @@ def get_upload_path(instance, filename):
     return 'post_office_attachments/' + filename
 
 
+@python_2_unicode_compatible
 class Attachment(models.Model):
     """
     A model describing an email attachment.
@@ -230,3 +234,6 @@ class Attachment(models.Model):
 
     class Meta:
         app_label = 'post_office'
+
+    def __str__(self):
+        return self.name
