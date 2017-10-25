@@ -2,6 +2,7 @@ import sys
 
 from multiprocessing import Pool
 
+from django import VERSION as DJANGO_VERSION
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import connection as db_connection
@@ -9,7 +10,7 @@ from django.db.models import Q
 from django.template import Context, Template
 
 from .connections import connections
-from .models import Email, EmailTemplate, PRIORITY, STATUS
+from .models import EmailTemplate, PRIORITY, STATUS
 from .settings import (get_available_backends, get_batch_size,
                        get_log_level, get_sending_order)
 from .utils import (get_email_template, parse_emails, parse_priority,
@@ -22,6 +23,17 @@ try:
 except ImportError:
     import datetime
     now = datetime.datetime.now
+
+
+# when an EmailModel is defined in the settings, use that one.
+# otherwise use the post_office Email model from .models
+if hasattr(settings, 'EmailModel') and DJANGO_VERSION >= (1, 7):
+    # EmailModel = ('email', 'Email')
+    app_label, app_name = settings.EmailModel
+    from django.apps import apps  # from django 1.7
+    Email = apps.get_model(app_label=app_label, app_name=app_name)
+else:
+    from .models import Email
 
 
 logger = setup_loghandlers("INFO")
