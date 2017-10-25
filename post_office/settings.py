@@ -98,3 +98,5 @@ def get_sending_order():
 CONTEXT_FIELD_CLASS = get_config().get('CONTEXT_FIELD_CLASS',
                                        'jsonfield.JSONField')
 context_field_class = import_attribute(CONTEXT_FIELD_CLASS)
+
+EMAIL_MODEL = getattr(settings, 'EMAIL_MODEL', 'post_office.Email')
