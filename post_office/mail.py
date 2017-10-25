@@ -25,7 +25,7 @@ except ImportError:
     now = datetime.datetime.now
 
 
-Email = apps.get_model(EMAIL_MODEL.split('.'))
+Email = apps.get_model(EMAIL_MODEL)
 
 
 logger = setup_loghandlers("INFO")
