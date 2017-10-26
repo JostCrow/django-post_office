@@ -2,7 +2,6 @@ import sys
 
 from multiprocessing import Pool
 
-from django.apps import apps
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import connection as db_connection
@@ -12,7 +11,7 @@ from django.template import Context, Template
 from .connections import connections
 from .models import EmailTemplate, PRIORITY, STATUS
 from .settings import (get_available_backends, get_batch_size,
-                       get_log_level, get_sending_order, EMAIL_MODEL)
+                       get_log_level, get_sending_order)
 from .utils import (get_email_template, parse_emails, parse_priority,
                     split_emails, create_attachments)
 from .logutils import setup_loghandlers
@@ -23,9 +22,6 @@ try:
 except ImportError:
     import datetime
     now = datetime.datetime.now
-
-
-Email = apps.get_model(EMAIL_MODEL)
 
 
 logger = setup_loghandlers("INFO")
