@@ -90,6 +90,11 @@ class Email(models.Model):
             message = self.message
             html_message = self.html_message
 
+        if isinstance(self.headers, str):
+            import json
+            # let it fail hard if the headers are corrupt
+            self.headers = json.loads(self.headers)
+
         if html_message:
             msg = EmailMultiAlternatives(
                 subject=subject, body=message, from_email=self.from_email,
