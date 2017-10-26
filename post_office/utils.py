@@ -1,3 +1,4 @@
+from django.apps import apps
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.files import File
@@ -9,8 +10,8 @@ except ImportError:
 
 from post_office import cache
 from .compat import string_types
-from .models import Email, PRIORITY, STATUS, EmailTemplate, Attachment
-from .settings import get_default_priority
+from .models import PRIORITY, STATUS, EmailTemplate, Attachment
+from .settings import get_default_priority, EMAIL_MODEL
 from .validators import validate_email_with_name
 
 
@@ -20,6 +21,10 @@ try:
 except ImportError:
     import datetime
     now = datetime.datetime.now
+
+
+def get_email_model():
+    return apps.get_model(EMAIL_MODEL)
 
 
 def send_mail(subject, message, from_email, recipient_list, html_message='',
@@ -32,9 +37,10 @@ def send_mail(subject, message, from_email, recipient_list, html_message='',
     subject = force_text(subject)
     status = None if priority == PRIORITY.now else STATUS.queued
     emails = []
+    email_model = get_email_model()
     for address in recipient_list:
         emails.append(
-            Email.objects.create(
+            email_model.objects.create(
                 from_email=from_email, to=address, subject=subject,
                 message=message, html_message=html_message, status=status,
                 headers=headers, priority=priority, scheduled_time=scheduled_time

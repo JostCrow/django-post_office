@@ -9,7 +9,11 @@ from django.utils.text import Truncator
 from django.utils.translation import ugettext_lazy as _
 
 from .fields import CommaSeparatedEmailField
-from .models import Attachment, Log, Email, EmailTemplate, STATUS
+from .models import Attachment, Log, EmailTemplate, STATUS
+from .utils import get_email_model
+
+
+Email = get_email_model()
 
 
 def get_message_preview(instance):

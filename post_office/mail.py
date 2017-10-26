@@ -13,7 +13,7 @@ from .models import EmailTemplate, PRIORITY, STATUS
 from .settings import (get_available_backends, get_batch_size,
                        get_log_level, get_sending_order)
 from .utils import (get_email_template, parse_emails, parse_priority,
-                    split_emails, create_attachments)
+                    split_emails, create_attachments, get_email_model)
 from .logutils import setup_loghandlers
 
 try:
@@ -25,6 +25,10 @@ except ImportError:
 
 
 logger = setup_loghandlers("INFO")
+
+
+# override the Email model in the case another one is specified in the settings
+Email = get_email_model()
 
 
 def create(sender, recipients=None, cc=None, bcc=None, subject='', message='',

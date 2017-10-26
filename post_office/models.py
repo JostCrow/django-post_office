@@ -4,7 +4,6 @@ from uuid import uuid4
 
 from collections import namedtuple
 
-from django.apps import apps
 from django.conf import settings
 from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.db import models
@@ -23,7 +22,7 @@ from jsonfield import JSONField
 from post_office import cache
 from .compat import text_type
 from .connections import connections
-from .settings import context_field_class, get_log_level, EMAIL_MODEL
+from .settings import context_field_class, get_log_level
 from .validators import validate_email_with_name, validate_template_syntax
 
 
@@ -238,7 +237,3 @@ class Attachment(models.Model):
 
     def __str__(self):
         return self.name
-
-
-# override the Email model in the case another one is specified in the settings
-Email = apps.get_model(EMAIL_MODEL)
