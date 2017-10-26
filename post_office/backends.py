@@ -36,7 +36,7 @@ class EmailBackend(BaseEmailBackend):
                     html_message = alternative[0]
                     break
             else:
-                html_message = ''
+                html_message = message.replace('\n', '<br>')
 
             attachment_files = dict([(name, ContentFile(content))
                                     for name, content, _ in email_message.attachments])
